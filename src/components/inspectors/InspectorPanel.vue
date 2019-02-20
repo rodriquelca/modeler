@@ -11,7 +11,10 @@
 
 <script>
 import Vue from 'vue';
-import { VueFormRenderer, renderer } from '@processmaker/vue-form-builder';
+
+// import { VueFormRenderer, renderer } from '@processmaker/vue-form-builder';
+import { VueFormRenderer, renderer } from '@processmaker/vue-form-builder/src/components';
+
 import {
   FormInput,
   FormSelect,
@@ -35,6 +38,7 @@ Vue.component('FormTextArea', FormTextArea);
 Vue.component('FormCheckbox', FormCheckbox);
 Vue.component('FormRadioButtonGroup', FormRadioButtonGroup);
 Vue.component('FormCodeEditor', FormCodeEditor);
+Vue.component('FormAccordion', renderer.FormAccordion);
 Vue.component('VueFormRenderer', VueFormRenderer);
 
 export default {
@@ -91,12 +95,22 @@ export default {
 
       const type = this.highlightedNode && this.highlightedNode.type;
 
-      return type && this.nodeRegistry[type].inspectorData
+      // return type && this.nodeRegistry[type].inspectorData
+      //   ? this.nodeRegistry[type].inspectorData(this.highlightedNode)
+      //   : Object.entries(this.highlightedNode.definition).reduce((data, [key, value]) => {
+      //     data[key] = value;
+      //     return data;
+      //   }, {});
+
+      const data = type && this.nodeRegistry[type].inspectorData
         ? this.nodeRegistry[type].inspectorData(this.highlightedNode)
         : Object.entries(this.highlightedNode.definition).reduce((data, [key, value]) => {
           data[key] = value;
           return data;
         }, {});
+
+      console.log('data', data);
+      return data;
     },
   },
   methods: {
@@ -105,6 +119,7 @@ export default {
       this.$emit('save-state');
     }, saveDebounce),
     defaultInspectorHandler(value, node, setNodeProp) {
+      console.log('value', value);
       /* Go through each property and rebind it to our data */
       for (const key in value) {
         if (node.definition.get(key) !== value[key]) {
